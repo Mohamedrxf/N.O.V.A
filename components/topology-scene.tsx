@@ -2,6 +2,7 @@
 
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Html, Line, OrbitControls } from '@react-three/drei'
+import { Computer, Router, Server } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { topologyLinks, topologyNodes } from '@/data/netsage-data'
@@ -23,19 +24,26 @@ function Pulse({ node }: { node: NodeData }) {
   return <mesh ref={ref}><sphereGeometry args={[0.32, 16, 16]} /><meshBasicMaterial color={colors[node.type]} transparent opacity={0.1} /></mesh>
 }
 
+const deviceIcons = { pc: Computer, server: Server, router: Router }
+
 function NetworkNode({ node, onSelect, selected }: { node: NodeData; onSelect: () => void; selected: boolean }) {
-  const ref = useRef<THREE.Mesh>(null)
+  const ref = useRef<THREE.Group>(null)
+  const DeviceIcon = deviceIcons[node.device]
   useFrame(({ clock }) => {
     if (!ref.current) return
-    const pulse = Math.sin(clock.elapsedTime * 2 + node.position[0]) * 0.07
-    ref.current.scale.setScalar((selected ? 1.22 : 1) + pulse)
-    ref.current.rotation.y += 0.008
+    const drift = Math.sin(clock.elapsedTime * 1.8 + node.position[0]) * 0.035
+    ref.current.position.y = node.position[1] + drift
+    ref.current.rotation.y = Math.sin(clock.elapsedTime * 0.45 + node.position[0]) * 0.08
   })
-  return <group position={node.position} onClick={(event) => { event.stopPropagation(); onSelect() }}>
+  return <group ref={ref} position={node.position} onClick={(event) => { event.stopPropagation(); onSelect() }}>
     <Pulse node={node} />
-    <mesh ref={ref}><icosahedronGeometry args={[0.14, 1]} /><meshBasicMaterial color={colors[node.type]} /></mesh>
-    <mesh scale={2.2}><sphereGeometry args={[0.14, 16, 16]} /><meshBasicMaterial color={colors[node.type]} transparent opacity={selected ? 0.18 : 0.07} /></mesh>
-    <Html center distanceFactor={8}><span className={`pointer-events-none whitespace-nowrap rounded-sm border px-1.5 py-0.5 font-mono text-[9px] tracking-[0.16em] transition ${selected ? 'border-cyan-200/50 bg-cyan-200/10 text-cyan-100' : 'border-transparent text-slate-300'}`}>{node.label}</span></Html>
+    <Html center distanceFactor={7} transform sprite>
+      <button type="button" aria-label={`Inspect ${node.label}`} className={`group/device flex min-w-[92px] flex-col items-center gap-1.5 rounded-xl border px-2.5 py-2 font-mono transition-all duration-300 ${selected ? 'scale-110 border-cyan-200/70 bg-cyan-200/15 shadow-[0_0_28px_rgba(82,214,200,.3)]' : 'border-white/15 bg-[#0b1d2c]/90 hover:scale-105 hover:border-cyan-200/45'}`}>
+        <span className="grid size-10 place-items-center rounded-lg border border-white/10 bg-[#102b3d]" style={{ color: colors[node.type] }}><DeviceIcon aria-hidden="true" className="size-6" /></span>
+        <span className="whitespace-nowrap text-[9px] tracking-[0.14em] text-slate-200">{node.label}</span>
+        <span className="text-[8px] uppercase tracking-widest" style={{ color: colors[node.type] }}>{node.device}</span>
+      </button>
+    </Html>
   </group>
 }
 

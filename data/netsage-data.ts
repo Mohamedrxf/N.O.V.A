@@ -37,10 +37,10 @@ export const cases: CaseOutcome[] = [
 ]
 
 export const topologyNodes: TopologyNode[] = [
-  { id: 'pc', label: 'PC-01', type: 'healthy', position: [-3.8, 1.9, 0] }, { id: 'sw', label: 'SW-01', type: 'healthy', position: [-1.8, 0.5, 0] },
-  { id: 'r1', label: 'R1', type: 'investigating', position: [0, -0.7, 0] }, { id: 'r2', label: 'R2', type: 'healthy', position: [1.9, 1.2, 0] },
-  { id: 'server', label: 'SERVER', type: 'healthy', position: [3.8, -0.1, 0] }, { id: 'ap', label: 'AP-01', type: 'fault', position: [-0.4, 2.4, 0] },
-  { id: 'client2', label: 'CLIENT-02', type: 'healthy', position: [2.2, -2.1, 0] },
+  { id: 'pc', label: 'PC-01', device: 'pc', type: 'healthy', position: [-3.8, 1.9, 0] }, { id: 'sw', label: 'RTR-01', device: 'router', type: 'healthy', position: [-1.8, 0.5, 0] },
+  { id: 'r1', label: 'RTR-02', device: 'router', type: 'investigating', position: [0, -0.7, 0] }, { id: 'r2', label: 'RTR-03', device: 'router', type: 'healthy', position: [1.9, 1.2, 0] },
+  { id: 'server', label: 'SERVER', device: 'server', type: 'healthy', position: [3.8, -0.1, 0] }, { id: 'ap', label: 'RTR-04', device: 'router', type: 'fault', position: [-0.4, 2.4, 0] },
+  { id: 'client2', label: 'PC-02', device: 'pc', type: 'healthy', position: [2.2, -2.1, 0] },
 ]
 export const topologyLinks: TopologyLink[] = [
   { source: 'pc', target: 'sw', type: 'healthy' }, { source: 'sw', target: 'r1', type: 'investigating' }, { source: 'r1', target: 'r2', type: 'healthy' },

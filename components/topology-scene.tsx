@@ -24,17 +24,14 @@ function Pulse({ node }: { node: NodeData }) {
   return <mesh ref={ref}><sphereGeometry args={[0.32, 16, 16]} /><meshBasicMaterial color={colors[node.type]} transparent opacity={0.1} /></mesh>
 }
 
-const deviceIcons = { pc: Computer, server: Server, router: Router } as const
-
-type DeviceKind = keyof typeof deviceIcons
-
-function getDeviceIcon(device: string) {
-  return deviceIcons[device as DeviceKind] ?? Router
+function DeviceGlyph({ device }: { device: string }) {
+  if (device === 'pc') return <Computer aria-hidden="true" className="size-6" />
+  if (device === 'server') return <Server aria-hidden="true" className="size-6" />
+  return <Router aria-hidden="true" className="size-6" />
 }
 
 function NetworkNode({ node, onSelect, selected }: { node: NodeData; onSelect: () => void; selected: boolean }) {
   const ref = useRef<THREE.Group>(null)
-  const DeviceIcon = getDeviceIcon(node.device)
   useFrame(({ clock }) => {
     if (!ref.current) return
     const drift = Math.sin(clock.elapsedTime * 1.8 + node.position[0]) * 0.035
@@ -45,7 +42,7 @@ function NetworkNode({ node, onSelect, selected }: { node: NodeData; onSelect: (
     <Pulse node={node} />
     <Html center distanceFactor={7} transform sprite>
       <button type="button" aria-label={`Inspect ${node.label}`} className={`group/device flex min-w-[92px] flex-col items-center gap-1.5 rounded-xl border px-2.5 py-2 font-mono transition-all duration-300 ${selected ? 'scale-110 border-cyan-200/70 bg-cyan-200/15 shadow-[0_0_28px_rgba(82,214,200,.3)]' : 'border-white/15 bg-[#0b1d2c]/90 hover:scale-105 hover:border-cyan-200/45'}`}>
-        <span className="grid size-10 place-items-center rounded-lg border border-white/10 bg-[#102b3d]" style={{ color: colors[node.type] }}><DeviceIcon aria-hidden="true" className="size-6" /></span>
+        <span className="grid size-10 place-items-center rounded-lg border border-white/10 bg-[#102b3d]" style={{ color: colors[node.type] }}><DeviceGlyph device={node.device} /></span>
         <span className="whitespace-nowrap text-[9px] tracking-[0.14em] text-slate-200">{node.label}</span>
         <span className="text-[8px] uppercase tracking-widest" style={{ color: colors[node.type] }}>{node.device}</span>
       </button>

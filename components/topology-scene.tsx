@@ -24,11 +24,17 @@ function Pulse({ node }: { node: NodeData }) {
   return <mesh ref={ref}><sphereGeometry args={[0.32, 16, 16]} /><meshBasicMaterial color={colors[node.type]} transparent opacity={0.1} /></mesh>
 }
 
-const deviceIcons = { pc: Computer, server: Server, router: Router }
+const deviceIcons = { pc: Computer, server: Server, router: Router } as const
+
+type DeviceKind = keyof typeof deviceIcons
+
+function getDeviceIcon(device: string) {
+  return deviceIcons[device as DeviceKind] ?? Router
+}
 
 function NetworkNode({ node, onSelect, selected }: { node: NodeData; onSelect: () => void; selected: boolean }) {
   const ref = useRef<THREE.Group>(null)
-  const DeviceIcon = deviceIcons[node.device]
+  const DeviceIcon = getDeviceIcon(node.device)
   useFrame(({ clock }) => {
     if (!ref.current) return
     const drift = Math.sin(clock.elapsedTime * 1.8 + node.position[0]) * 0.035
